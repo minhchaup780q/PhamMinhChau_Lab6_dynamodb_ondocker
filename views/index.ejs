@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>NodeJS CRUD DynamoDB</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .alert-fixed {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+        }
+    </style>
+</head>
+
+<body class="container mt-5">
+
+    <div class="alert-fixed">
+        <% if (typeof message !== 'undefined' && message) { %>
+            <% 
+                let alertClass = 'alert-success';
+                let text = '';
+                if(message === 'add_success') text = 'Thêm sản phẩm thành công!';
+                if(message === 'update_success') text = 'Cập nhật thành công!';
+                if(message === 'delete_success') { text = 'Đã xóa sản phẩm!'; alertClass = 'alert-warning'; }
+                if(message === 'error') { text = 'Có lỗi xảy ra!'; alertClass = 'alert-danger'; }
+            %>
+                <div class="alert <%= alertClass %> alert-dismissible fade show shadow" role="alert">
+                    <%= text %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <% } %>
+    </div>
+
+    <h2>Thêm Sản Phẩm Mới</h2>
+    <form action="/add" method="POST" enctype="multipart/form-data" class="mb-5 border p-3 rounded bg-light">
+        <div class="row">
+            <div class="col-md-4"><input type="text" name="name" placeholder="Tên SP" class="form-control mb-2" required></div>
+            <div class="col-md-2"><input type="number" name="price" placeholder="Giá" class="form-control mb-2" min="1" required></div>
+            <div class="col-md-2"><input type="number" name="unit_in_stock" placeholder="Số lượng tồn" class="form-control mb-2" min="0" required></div>
+            <div class="col-md-3"><input type="file" name="url_image" class="form-control mb-2" required></div>
+            <div class="col-md-1"><button type="submit" class="btn btn-primary w-100">Lưu</button></div>
+        </div>
+    </form>
+
+    <h2>Danh sách sản phẩm</h2>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <form action="/search" method="GET" class="d-flex">
+                <input type="text" name="keyword" class="form-control me-2" placeholder="Nhập tên sản phẩm cần tìm..." value="<%= typeof keyword !== 'undefined' ? keyword : '' %>">
+                <button type="submit" class="btn btn-outline-success">Tìm</button>
+                <% if (typeof keyword !== 'undefined' && keyword) { %>
+                    <a href="/" class="btn btn-outline-secondary ms-2">Hủy</a>
+                    <% } %>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-hover border">
+        <thead class="table-dark">
+            <tr>
+                <th>Ảnh</th>
+                <th>Tên</th>
+                <th>Giá</th>
+                <th>Tồn kho</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% products.forEach(p => { %>
+                <tr>
+                    <td><img src="<%= p.url_image %>" width="60" class="rounded shadow-sm"></td>
+                    <td><strong><%= p.name %></strong></td>
+                    <td>
+                        <%= p.price.toLocaleString() %> đ</td>
+                    <td>
+                        <%= p.unit_in_stock %>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="/detail/<%= p.id %>" class="btn btn-info btn-sm text-white">Xem</a>
+                            <a href="/edit/<%= p.id %>" class="btn btn-warning btn-sm">Sửa</a>
+                            <form action="/delete/<%= p.id %>" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                <button class="btn btn-danger btn-sm">Xóa</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <% }) %>
+        </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            setTimeout(function() {
+                $(".alert").fadeOut(1000);
+            }, 3000);
+        });
+    </script>
+</body>
+
+</html>

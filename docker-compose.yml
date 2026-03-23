@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # 1. Container Cơ sở dữ liệu (DynamoDB Local)
+  dynamodb-local:
+    image: amazon/dynamodb-local
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    # Lệnh chạy DynamoDB để lưu dữ liệu vào bộ nhớ tạm thời
+    command: "-jar DynamoDBLocal.jar -sharedDb"
+
+  # 2. Container Ứng dụng Node.js
+  app:
+    build: .
+    container_name: node-app
+    ports:
+      - "3000:3000"
+    environment:
+      # Các biến môi trường để App kết nối tới DynamoDB local
+      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
+      - AWS_REGION=us-west-2
+      - AWS_ACCESS_KEY_ID=fakeMyKeyId
+      - AWS_SECRET_ACCESS_KEY=fakeSecretAccessKey
+    # Volumes giúp bạn sửa code ở máy thật mà container cập nhật ngay (Hot reload)
+    volumes:
+      - .:/app
+      - /app/node_modules
+    # Đảm bảo DB chạy trước App mới chạy
+    depends_on:
+      - dynamodb-local

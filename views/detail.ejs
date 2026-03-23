@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết sản phẩm -
+        <%= p.name %>
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .product-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .img-container {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .product-img {
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+        
+        .price-tag {
+            font-size: 1.5rem;
+            color: #d9534f;
+            font-weight: bold;
+        }
+        
+        .badge-stock {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <a href="/" class="btn btn-outline-primary mb-4 d-inline-flex align-items-center">
+                    <span class="material-icons me-1" style="font-size: 18px;">arrow_back</span> Quay lại danh sách
+                </a>
+
+                <div class="card product-card shadow-lg">
+                    <div class="row g-0">
+                        <div class="col-md-6 img-container border-end">
+                            <img src="<%= p.url_image %>" class="img-fluid product-img" alt="<%= p.name %>">
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card-body p-4">
+                                <h6 class="text-muted text-uppercase mb-2">Thông tin sản phẩm</h6>
+                                <h2 class="card-title fw-bold mb-3">
+                                    <%= p.name %>
+                                </h2>
+
+                                <div class="mb-4">
+                                    <span class="text-muted">Giá bán:</span>
+                                    <div class="price-tag">
+                                        <%= p.price.toLocaleString('vi-VN') %> VND</div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <span class="text-muted">Tình trạng kho:</span>
+                                    <div>
+                                        <% if (p.unit_in_stock > 0) { %>
+                                            <span class="badge bg-success badge-stock">Còn hàng (<%= p.unit_in_stock %>)</span>
+                                            <% } else { %>
+                                                <span class="badge bg-danger badge-stock">Hết hàng</span>
+                                                <% } %>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="d-grid gap-2 d-md-block mt-4">
+                                    <a href="/edit/<%= p.id %>" class="btn btn-warning px-4">Chỉnh sửa</a>
+                                    <button class="btn btn-outline-danger px-4" onclick="confirmDelete('<%= p.id %>')">Xóa sản phẩm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmDelete(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/delete/${id}`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
